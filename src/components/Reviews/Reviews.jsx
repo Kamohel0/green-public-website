@@ -4,7 +4,6 @@ import "slick-carousel/slick/slick-theme.css";
 import swirl from "../../assets/swirl.svg";
 import avater from "../../assets/avatar.jpeg"; // Adjust the path as necessary
 
-
 const reviews = [
   {
     text: "The sea moss body butter has done wonders for my skin, love it!",
@@ -24,7 +23,6 @@ const reviews = [
   },
 ];
 
-
 const Reviews = () => {
   const settings = {
     dots: true,
@@ -34,7 +32,7 @@ const Reviews = () => {
     slidesToScroll: 1,
     autoplay: true,
     arrows: true,
-    appendDots: dots => (
+    appendDots: (dots) => (
       <div>
         <ul style={{ margin: "-10px" }}>{dots}</ul>
       </div>
@@ -54,7 +52,10 @@ const Reviews = () => {
   };
 
   return (
-    <div className="bg-[#e9d6c5] py-12  flex items-center justify-center" style={{ fontFamily: "'Playfair Display', serif" }}>
+    <div
+      className="bg-[#e9d6c5] py-12  flex items-center justify-center"
+      style={{ fontFamily: "'Playfair Display', serif" }}
+    >
       <div className="w-full max-w-xl mx-auto text-center bg-[#e9d6c5] rounded-lg p-8 shadow-none">
         <h2 className="text-2xl font-bold mb-6">Reviews</h2>
         <Slider
@@ -74,7 +75,9 @@ const Reviews = () => {
                   className="w-16 h-16 rounded-full object-cover border-4 border-white mx-auto mb-4 shadow"
                 />
                 {/* Review Text */}
-                <p className="text-xl font-italics text-[#2e2e2e] mb-2">{review.text}</p>
+                <p className="text-xl font-italics text-[#2e2e2e] mb-2">
+                  {review.text}
+                </p>
               </div>
             </div>
           ))}
