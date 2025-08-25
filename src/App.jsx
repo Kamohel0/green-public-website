@@ -10,6 +10,7 @@ import ProductDetail from "./components/Products/ProductDetail";
 import Cart from "./components/Cart/Cart";
 import ProfilePage from "./components/Profile/ProfilePage";
 import Payment from "./components/Payment/payment";
+import Login from "./components/Profile/Login";
 
 const App = () => {
   return (
@@ -25,7 +26,8 @@ const App = () => {
               <Reviews />
               <Deals />
               <Footer />
-              
+          
+
             </>
           }
         />
@@ -37,6 +39,8 @@ const App = () => {
         <Route path="/profile" element={<ProfilePage />} />
 
         <Route path="/payment" element={<Payment />} />
+
+        <Route path="/login" element={<Login />} />
       </Routes>
     </div>
   );

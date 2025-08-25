@@ -34,7 +34,10 @@ const Hero = () => {
 
         <motion.h1
           className="text-5xl font-bold mb-4 text-white drop-shadow-lg"
-          style={{ fontFamily: "'Playfair Display', serif", letterSpacing: "2px" }}
+          style={{
+            fontFamily: "'Playfair Display', serif",
+            letterSpacing: "2px",
+          }}
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3, duration: 0.8 }}
@@ -49,12 +52,16 @@ const Hero = () => {
           animate={{ opacity: 1 }}
           transition={{ delay: 0.6, duration: 0.8 }}
         >
-          Discover natural beauty products that nourish your skin and elevate your glow.
+          Discover natural beauty products that nourish your skin and elevate
+          your glow.
         </motion.p>
 
         <motion.button
           className="bg-[#3c6e33] hover:bg-[#295024] transition-colors duration-300 text-white px-10 py-3 rounded-full shadow-lg text-lg font-semibold hover:scale-105 active:scale-95"
-          style={{ fontFamily: "'Playfair Display', serif", letterSpacing: "1px" }}
+          style={{
+            fontFamily: "'Playfair Display', serif",
+            letterSpacing: "1px",
+          }}
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ delay: 1.1, duration: 0.6 }}

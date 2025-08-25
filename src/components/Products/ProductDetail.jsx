@@ -1,8 +1,10 @@
 import { useParams } from "react-router-dom";
 import { useState } from "react";
+import { motion } from "framer-motion"; // ✅ Framer Motion 
 import { FaMinus, FaPlus, FaHeart, FaShoppingBag, FaStar } from "react-icons/fa";
 import { FiThumbsUp } from "react-icons/fi";
 import Footer from "../footer/Footer";
+import useCartStore from "../store/useCartStore"; // <-- zustand store
 
 // Product images
 import Product1 from "../../assets/gel.png";
@@ -25,21 +27,15 @@ export default function ProductDetail() {
   const [isWishlisted, setIsWishlisted] = useState(false);
   const [isHelpful, setIsHelpful] = useState(false);
 
+  // ✅ use zustand cart store
+  const addToCart = useCartStore((state) => state.addToCart);
+
   if (!product) {
     return <div className="text-center py-20">Product not found.</div>;
   }
 
   const handleAddToCart = () => {
-    const cart = JSON.parse(localStorage.getItem("cart")) || [];
-    const itemIndex = cart.findIndex((item) => item.id === product.id);
-
-    if (itemIndex > -1) {
-      cart[itemIndex].quantity += quantity;
-    } else {
-      cart.push({ ...product, quantity });
-    }
-
-    localStorage.setItem("cart", JSON.stringify(cart));
+    addToCart({ ...product, quantity }); // send product + quantity to zustand
     alert("Item added to cart!");
   };
 
@@ -63,14 +59,28 @@ export default function ProductDetail() {
   return (
     <div className="font-sans text-[#2E2E2E]">
       {/* Product Section */}
-      <div className="grid md:grid-cols-2 gap-6 px-4 py-10 max-w-6xl mx-auto">
+      <motion.div
+        initial={{ opacity: 0, y: 30 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6 }}
+        className="grid md:grid-cols-2 gap-6 px-4 py-10 max-w-6xl mx-auto"
+      >
         {/* Image */}
-        <div className="bg-[#F6E9E0] p-6 rounded">
+        <motion.div
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.6 }}
+          className="bg-[#F6E9E0] p-6 rounded"
+        >
           <img src={product.img} alt={product.name} className="w-full max-w-sm mx-auto" />
-        </div>
+        </motion.div>
 
         {/* Info */}
-        <div>
+        <motion.div
+          initial={{ opacity: 0, x: 50 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.6, delay: 0.2 }}
+        >
           <h2 className="text-2xl font-semibold mb-2 border-b border-gray-300 pb-2">{product.name}</h2>
           <p className="mb-4 text-sm">{product.desc}</p>
           <p className="font-bold text-lg">{product.price}</p>
@@ -78,50 +88,76 @@ export default function ProductDetail() {
 
           {/* Quantity */}
           <div className="flex items-center space-x-3 mt-4">
-            <button className="p-2 border rounded" onClick={() => setQuantity((q) => Math.max(1, q - 1))}>
+            <motion.button
+              whileTap={{ scale: 0.9 }}
+              className="p-2 border rounded"
+              onClick={() => setQuantity((q) => Math.max(1, q - 1))}
+            >
               <FaMinus />
-            </button>
+            </motion.button>
             <span>{quantity}</span>
-            <button className="p-2 border rounded" onClick={() => setQuantity((q) => q + 1)}>
+            <motion.button
+              whileTap={{ scale: 0.9 }}
+              className="p-2 border rounded"
+              onClick={() => setQuantity((q) => q + 1)}
+            >
               <FaPlus />
-            </button>
+            </motion.button>
 
             {/* Wishlist */}
-            <button className="ml-4 p-2 border rounded text-red-500" onClick={toggleWishlist}>
+            <motion.button
+              whileTap={{ scale: 0.9 }}
+              className="ml-4 p-2 border rounded text-red-500"
+              onClick={toggleWishlist}
+            >
               <FaHeart className={isWishlisted ? "fill-current" : ""} />
-            </button>
+            </motion.button>
           </div>
 
           {/* Add to Cart */}
-          <button
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
             className="mt-6 bg-green-800 text-white px-6 py-2 rounded flex items-center gap-2"
             onClick={handleAddToCart}
           >
             <FaShoppingBag /> Add to Cart
-          </button>
-        </div>
-      </div>
+          </motion.button>
+        </motion.div>
+      </motion.div>
 
       {/* Review */}
-      <div className="px-4 max-w-4xl mx-auto mb-10">
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.6 }}
+        className="px-4 max-w-4xl mx-auto mb-10"
+      >
         <div className="flex items-center space-x-2 text-yellow-500">
-          {Array.from({ length: 5 }).map((_, i) => <FaStar key={i} />)}
+          {Array.from({ length: 5 }).map((_, i) => (
+            <FaStar key={i} />
+          ))}
         </div>
-        <p className="mt-2 text-sm font-semibold">Tumi - 07 Jun 2025 <span className="text-xs italic">(Reviewed 7 days after purchase)</span></p>
+        <p className="mt-2 text-sm font-semibold">
+          Tumi - 07 Jun 2025{" "}
+          <span className="text-xs italic">(Reviewed 7 days after purchase)</span>
+        </p>
         <p className="text-sm mt-2">
           This is my first time trying sea moss body butter, and I’m really impressed! It exceeded my expectations for daily skincare — it’s super lightweight and absorbs quickly...
         </p>
 
         {/* Helpful */}
-        <button
+        <motion.button
+          whileTap={{ scale: 0.95 }}
           className={`flex items-center gap-2 border rounded-full px-4 py-1 mt-4 text-sm ${
             isHelpful ? "bg-green-100 border-green-500" : ""
           }`}
           onClick={() => setIsHelpful(!isHelpful)}
         >
           <FiThumbsUp /> Helpful ({isHelpful ? 3 : 2})
-        </button>
-      </div>
+        </motion.button>
+      </motion.div>
 
       {/* Footer */}
       <Footer />

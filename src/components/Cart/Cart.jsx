@@ -9,6 +9,8 @@ import {
   ArrowRight,
 } from "lucide-react";
 import Footer from "../footer/Footer";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Label } from "@/components/ui/label";
 
 const Cart = () => {
   return (
@@ -16,7 +18,7 @@ const Cart = () => {
       <main className="p-4 flex flex-col lg:flex-row gap-4">
         {/* Cart Items */}
         <div className="flex-1 border p-4">
-          <h2 className="text-xl font-semibold mb-4">Shopping bag</h2>
+          <h2 className="text-xl font-semibold mb-4">Shopping Cart</h2>
 
           {["Sea moss body butter", "Sea moss gel", "Sea moss lip balm"].map(
             (item, idx) => (
@@ -38,6 +40,7 @@ const Cart = () => {
             )
           )}
         </div>
+         
 
         {/* Delivery Form */}
         <div className="flex-1 border p-4 mb-4">
@@ -88,6 +91,7 @@ const Cart = () => {
               className="p-2 bg-gray-100"
             />
           </div>
+          {/* Terms and Conditions Checkbox */}
           <button className="bg-green-900 text-white px-6 py-2 mt-4 rounded">
             Pay Now
           </button>
