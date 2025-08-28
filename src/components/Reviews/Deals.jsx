@@ -6,8 +6,9 @@ const Deals = () => {
           className="text-2xl font-bold mb-6"
           style={{ fontFamily: "'Playfair Display', serif" }}
         >
-          Deals
+          Newsletter
         </h2>
+        <h3>Join to get special offers, giveaways, new product launches and more.</h3>
         <div className="mt-8 max-w-md mx-auto flex gap-2">
           <input
             type="text"
@@ -21,9 +22,11 @@ const Deals = () => {
           >
             Join
           </button>
+          
         </div>
       </div>
     </div>
+    
   );
 };
 

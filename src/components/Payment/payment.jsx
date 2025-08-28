@@ -86,7 +86,7 @@ const Payment = () => {
       <main className="p-4 flex flex-col lg:flex-row gap-5">
         {/* Cart Items */}
         <div className="flex-1 border p-4 rounded-lg shadow-sm">
-          <h2 className="text-xl font-semibold mb-4">Shopping Bag</h2>
+          <h2 className="text-xl font-semibold mb-4">Shopping Cart</h2>
           {cartItems.map((item, idx) => (
             <div key={idx} className="border p-2 flex justify-between items-center mb-4 rounded">
               <div>

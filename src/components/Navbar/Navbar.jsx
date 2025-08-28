@@ -65,7 +65,7 @@ const Navbar = () => {
           </div>
 
 {/* Mobile Section */}
-<div className="md:hidden flex flex-1 items-center justify-end gap-x-2 relative">
+<div className="md:hidden flex flex-1 items-center justify-start gap-x-2 relative left-12">
   {/* Mobile Search Toggle */}
   <button
     className="p-2 rounded hover:bg-green-100 focus:outline-none"
@@ -79,33 +79,35 @@ const Navbar = () => {
   </button>
 
   {/* Mobile Cart & Profile */}
+  <div className=" flex flex-1 gap-x-2 justify-end">
   <Link to="/payment">
-    <ShoppingCart className="h-6 w-6 text-gray-700 hover:text-green-600 transition" />
+    <ShoppingCart className="h-6 w-6 text-gray-700 hover:text-green-600 transition " />
   </Link>
   <Link to="/profile">
     <User className="h-6 w-6 text-gray-700 hover:text-green-600 transition" />
   </Link>
-
-  {/* Mobile Search Input */}
-  <div
-    className={`absolute left-0 top-12 min-w-72 px-4 z-50 transition-all duration-300 ${
-      showSearch ? "opacity-100 scale-100" : "opacity-0 scale-95 pointer-events-none"
-    }`}
-    style={{ transformOrigin: "top" }}
-  >
-    <input
-      type="text"
-      placeholder="Search..."
-      className="w-full rounded-full border border-gray-300 px-2 py-1 focus:outline-none focus:border-green-500 bg-white shadow"
-      autoFocus={showSearch}
-    />
   </div>
+
+{/* Mobile Search Input */}
+<div
+  className={`absolute top-14 left-13 min-w-72 px-4 z-40 transition-all duration-300 ${
+    showSearch ? "opacity-100 scale-100" : "opacity-0 scale-95 pointer-events-none"
+  }`}
+  style={{ transformOrigin: "top" }}
+>
+  <input
+    type="text"
+    placeholder="Search..."
+    className="w-full rounded-full border border-gray-300 px-2 py-1 focus:outline-none focus:border-green-500 bg-white shadow"
+    autoFocus={showSearch}
+  />
+</div>
 
   {/* Sheet Menu with Icon Trigger */}
   <Sheet>
     <SheetTrigger asChild>
       <button
-        className="p-2 rounded bg-beige text-gray-700 hover:bg-yellow-100 focus:outline-none"
+        className="p-2 rounded bg-beige text-gray-700 hover:bg-yellow-100 focus:outline-none absolute left-8"
         aria-label="Open menu"
       >
         <svg
