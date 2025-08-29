@@ -16,7 +16,7 @@ import Product4 from "../../assets/balm.png";
 const items = [
   { img: Product1, name: "Sea Moss Gel", price: "R 250", priceValue: 250, desc: "Gel description...", id: "1" },
   { img: Product2, name: "Sea Moss Body Butter", price: "R 180", priceValue: 180, desc: "Butter description...", id: "2" },
-  { img: Product3, name: "Sea Moss Body Butter", price: "R 180", priceValue: 180, desc: "Butter description...", id: "3" },
+  { img: Product3, name: "Sea Moss Castor Oil", price: "R 180", priceValue: 180, desc: "Butter description...", id: "3" },
   { img: Product4, name: "Sea Moss Lip Balm", price: "R 80", priceValue: 80, desc: "Lip balm description...", id: "4" },
 ];
 
