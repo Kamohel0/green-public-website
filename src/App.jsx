@@ -11,9 +11,7 @@ import Cart from "./components/Cart/Cart";
 import ProfilePage from "./components/Profile/ProfilePage";
 import Payment from "./components/Payment/payment";
 import Login from "./components/Profile/Login";
-// If you have About and Services components, import them here
-// import About from "./components/About/About";
-// import Services from "./components/Services/Services";
+import About from "./components/About/about";
 
 const App = () => {
   return (
@@ -55,7 +53,10 @@ const App = () => {
               <section id="deals">
                 <Deals />
               </section>
-
+              {/* About us section */}
+              <section id="about">
+                <About />
+              </section>
               {/* Contact Section */}
               <section id="contact">
                 <Footer />
