@@ -1,6 +1,22 @@
-import { FaFacebookF, FaTwitter, FaInstagram } from "react-icons/fa";
+import { FaFacebookF, FaTwitter, FaInstagram } from "react-icons/fa"
+import { useNavigate, useLocation } from "react-router-dom"
 
 export default function Footer() {
+  const navigate = useNavigate()
+  const location = useLocation()
+
+  // Scroll or navigate helper
+  const handleScroll = (id) => {
+    if (location.pathname === "/") {
+      const el = document.getElementById(id)
+      if (el) {
+        el.scrollIntoView({ behavior: "smooth" })
+      }
+    } else {
+      navigate(`/#${id}`)
+    }
+  }
+
   return (
     <footer className="relative text-black bg-[#f7f7f7] overflow-hidden">
       {/* SVG Wave */}
@@ -11,7 +27,6 @@ export default function Footer() {
           viewBox="0 0 512 100"
           xmlns="http://www.w3.org/2000/svg"
           preserveAspectRatio="none"
-         
         >
           <path
             d="M0,30 C80,0 130,0 200,30 C270,60 340,60 410,30 C470,0 512,20 512,20 L512,100 L0,100 Z"
@@ -19,7 +34,7 @@ export default function Footer() {
           />
         </svg>
       </div>
-    
+
       <div className="relative z-10 max-w-6xl mx-auto px-6 py-8 grid md:grid-cols-3 gap-8 text-sm text-center">
         {/* Contact Details */}
         <div>
@@ -38,40 +53,36 @@ export default function Footer() {
           <h3 className="font-semibold mb-2 text-black">Quick Links</h3>
           <ul className="space-y-1">
             <li>
-              <a
-                href="#"
+              <button
+                onClick={() => handleScroll("hero")}
                 className="relative hover:underline transition-all duration-300 before:content-[''] before:absolute before:left-0 before:-bottom-0.5 before:w-0 hover:before:w-full before:h-0.5 before:bg-black before:transition-all before:duration-300"
-                style={{ paddingBottom: "2px" }}
               >
                 Home
-              </a>
+              </button>
             </li>
             <li>
-              <a
-                href="#"
+              <button
+                onClick={() => handleScroll("products")}
                 className="relative hover:underline transition-all duration-300 before:content-[''] before:absolute before:left-0 before:-bottom-0.5 before:w-0 hover:before:w-full before:h-0.5 before:bg-black before:transition-all before:duration-300"
-                style={{ paddingBottom: "2px" }}
               >
                 Shop
-              </a>
+              </button>
             </li>
             <li>
-              <a
-                href="#"
+              <button
+                onClick={() => handleScroll("about")}
                 className="relative hover:underline transition-all duration-300 before:content-[''] before:absolute before:left-0 before:-bottom-0.5 before:w-0 hover:before:w-full before:h-0.5 before:bg-black before:transition-all before:duration-300"
-                style={{ paddingBottom: "2px" }}
               >
                 About Us
-              </a>
+              </button>
             </li>
             <li>
-              <a
-                href="#"
+              <button
+                onClick={() => handleScroll("contact")}
                 className="relative hover:underline transition-all duration-300 before:content-[''] before:absolute before:left-0 before:-bottom-0.5 before:w-0 hover:before:w-full before:h-0.5 before:bg-black before:transition-all before:duration-300"
-                style={{ paddingBottom: "2px" }}
               >
                 Contact Us
-              </a>
+              </button>
             </li>
           </ul>
         </div>
@@ -98,5 +109,5 @@ export default function Footer() {
         </div>
       </div>
     </footer>
-  );
+  )
 }

@@ -1,31 +1,27 @@
-import { create } from "zustand"
-import { persist } from "zustand/middleware"
+import { create } from "zustand";
 
-const useCartStore = create(
-  persist(
-    (set, get) => ({
-      cart: [],
-      addToCart: (product) => {
-        const cart = get().cart
-        const existing = cart.find(item => item.id === product.id)
-        if (existing) {
-          set({
-            cart: cart.map(item =>
-              item.id === product.id
-                ? { ...item, quantity: item.quantity + 1 }
-                : item
-            ),
-          })
-        } else {
-          set({ cart: [...cart, { ...product, quantity: 1 }] })
-        }
-      },
-      removeFromCart: (id) =>
-        set({ cart: get().cart.filter(item => item.id !== id) }),
-      clearCart: () => set({ cart: [] }),
+const useCartStore = create((set) => ({
+  cart: [],
+  addToCart: (product) =>
+    set((state) => {
+      const existing = state.cart.find((item) => item.id === product.id);
+      if (existing) {
+        return {
+          cart: state.cart.map((item) =>
+            item.id === product.id ? { ...item, quantity: item.quantity + product.quantity } : item
+          ),
+        };
+      }
+      return { cart: [...state.cart, product] };
     }),
-    { name: "cart-storage" } // localStorage persistence
-  )
-)
+  updateCartItem: (id, quantity) =>
+    set((state) => ({
+      cart: state.cart.map((item) => (item.id === id ? { ...item, quantity } : item)),
+    })),
+  removeFromCart: (id) =>
+    set((state) => ({
+      cart: state.cart.filter((item) => item.id !== id),
+    })),
+}));
 
-export default useCartStore
+export default useCartStore;

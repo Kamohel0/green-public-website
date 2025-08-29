@@ -17,7 +17,7 @@ const Deals = () => {
             style={{ fontFamily: "'Playfair Display', serif" }}
           />
           <button
-            className="bg-[#3c6e33] hover:bg-green-800 text-white px-8 rounded text-lg font-semibold cursor-default"
+            className="bg-[#15803d] hover:bg-green-800 text-white px-6 py-2 rounded"
             style={{ fontFamily: "'Playfair Display', serif" }}
           >
             Join

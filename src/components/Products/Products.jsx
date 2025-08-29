@@ -27,12 +27,12 @@ const Products = () => {
             </Link>
           ))}
         </div>
-        <div className="text-center mt-8">
-          <button className="bg-[#3c6e33] hover:bg-green-800 text-white px-6 py-2 rounded"
+        {/* <div className="text-center mt-8">
+          <button className="bg-[#15803d] hover:bg-green-800 text-white px-6 py-2 rounded"
           style={{ fontFamily: "'Playfair Display', serif" }}>
             View All
           </button>
-        </div>
+        </div> */}
       </div>
     </div>
   );

@@ -1,8 +1,24 @@
-import { motion } from "framer-motion";
-import Logo from "../../assets/logo.png";
-import video from "../../assets/hero-bg.mp4";
+import { motion } from "framer-motion"
+import { useNavigate, useLocation } from "react-router-dom"
+import Logo from "../../assets/logo.png"
+import video from "../../assets/hero-bg.mp4"
 
 const Hero = () => {
+  const navigate = useNavigate()
+  const location = useLocation()
+
+  // Scroll or navigate helper
+  const handleScroll = (id) => {
+    if (location.pathname === "/") {
+      const el = document.getElementById(id)
+      if (el) {
+        el.scrollIntoView({ behavior: "smooth" })
+      }
+    } else {
+      navigate(`/#${id}`)
+    }
+  }
+
   return (
     <div className="relative w-full h-screen overflow-hidden text-center">
       {/* Background Video */}
@@ -17,7 +33,7 @@ const Hero = () => {
         Your browser does not support the video tag.
       </video>
 
-      {/* Overlay blur and tint */}
+      {/* Overlay */}
       <div className="absolute inset-0 bg-black/30 backdrop-blur-sm z-10"></div>
 
       {/* Foreground Content */}
@@ -57,7 +73,8 @@ const Hero = () => {
         </motion.p>
 
         <motion.button
-className="bg-[#15803d] hover:bg-green-800 text-white px-6 py-2 rounded"
+          onClick={() => handleScroll("products")}
+          className="bg-[#15803d] hover:bg-green-800 text-white px-6 py-2 rounded"
           style={{ fontFamily: "'Playfair Display', serif" }}
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
@@ -67,7 +84,7 @@ className="bg-[#15803d] hover:bg-green-800 text-white px-6 py-2 rounded"
         </motion.button>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default Hero;
+export default Hero

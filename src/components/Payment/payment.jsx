@@ -4,16 +4,16 @@ import React, { useEffect, useState } from "react";
 import Footer from "../footer/Footer";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
+import useCartStore from "../store/useCartStore"; // ✅ import Zustand cart
 
 const Payment = () => {
   const [sdkReady, setSdkReady] = useState(false);
-  const [cartItems, setCartItems] = useState([
-    { name: "Sea moss body butter", price: 1900, quantity: 1 },
-    { name: "Sea moss gel", price: 2000, quantity: 1 },
-    { name: "Sea moss lip balm", price: 1500, quantity: 1 },
-  ]);
-
   const [acceptedTerms, setAcceptedTerms] = useState(false);
+
+  // ✅ Get cart items from Zustand store
+  const cartItems = useCartStore((state) => state.cart);
+  const updateCartItem = useCartStore((state) => state.updateCartItem);
+  const removeFromCart = useCartStore((state) => state.removeFromCart);
 
   // Load Yoco SDK
   useEffect(() => {
@@ -35,20 +35,7 @@ const Payment = () => {
     }
   }, []);
 
-  // Quantity handlers
-  const updateQuantity = (index, change) => {
-    setCartItems((prev) =>
-      prev.map((item, i) =>
-        i === index ? { ...item, quantity: Math.max(1, item.quantity + change) } : item
-      )
-    );
-  };
-
-  const removeItem = (index) => {
-    setCartItems((prev) => prev.filter((_, i) => i !== index));
-  };
-
-  const totalAmount = cartItems.reduce((acc, item) => acc + item.price * item.quantity, 0);
+  const totalAmount = cartItems.reduce((acc, item) => acc + item.priceValue * item.quantity, 0);
 
   const handlePayNow = () => {
     if (!acceptedTerms) {
@@ -66,7 +53,7 @@ const Payment = () => {
     });
 
     yoco.showPopup({
-      amountInCents: totalAmount,
+      amountInCents: totalAmount * 100, // ✅ convert to cents
       currency: "ZAR",
       name: "Sea Moss Products",
       description: "Order Payment",
@@ -75,7 +62,6 @@ const Payment = () => {
           alert("Payment Failed: " + result.error.message);
         } else {
           alert("Payment Successful! Token: " + result.id);
-          // TODO: send result.id to backend
         }
       },
     });
@@ -87,22 +73,36 @@ const Payment = () => {
         {/* Cart Items */}
         <div className="flex-1 border p-4 rounded-lg shadow-sm">
           <h2 className="text-xl font-semibold mb-4">Shopping Cart</h2>
-          {cartItems.map((item, idx) => (
-            <div key={idx} className="border p-2 flex justify-between items-center mb-4 rounded">
-              <div>
-                <div className="font-medium">{item.name}</div>
-                <div className="text-sm text-gray-600">R{(item.price / 100).toFixed(2)}</div>
+          {cartItems.length === 0 ? (
+            <p>Your cart is empty.</p>
+          ) : (
+            cartItems.map((item, idx) => (
+              <div key={idx} className="border p-2 flex justify-between items-center mb-4 rounded">
+                <div>
+                  <div className="font-medium">{item.name}</div>
+                  <div className="text-sm text-gray-600">R {item.priceValue}</div>
+                </div>
+                <div className="flex items-center gap-2">
+                  <button
+                    className="border px-2 rounded"
+                    onClick={() => updateCartItem(item.id, Math.max(1, item.quantity - 1))}
+                  >
+                    -
+                  </button>
+                  <span>{item.quantity}</span>
+                  <button
+                    className="border px-2 rounded"
+                    onClick={() => updateCartItem(item.id, item.quantity + 1)}
+                  >
+                    +
+                  </button>
+                  <button className="text-red-500" onClick={() => removeFromCart(item.id)}>🗑️</button>
+                </div>
               </div>
-              <div className="flex items-center gap-2">
-                <button className="border px-2 rounded" onClick={() => updateQuantity(idx, -1)}>-</button>
-                <span>{item.quantity}</span>
-                <button className="border px-2 rounded" onClick={() => updateQuantity(idx, 1)}>+</button>
-                <button className="text-red-500" onClick={() => removeItem(idx)}>🗑️</button>
-              </div>
-            </div>
-          ))}
+            ))
+          )}
           <div className="font-bold text-right text-lg">
-            Total: R{(totalAmount / 100).toFixed(2)}
+            Total: R {totalAmount.toFixed(2)}
           </div>
         </div>
 

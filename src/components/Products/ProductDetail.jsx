@@ -118,7 +118,7 @@ export default function ProductDetail() {
           <motion.button
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
-            className="mt-6 bg-green-800 text-white px-6 py-2 rounded flex items-center gap-2"
+            className="bg-[#15803d] hover:bg-green-800 text-white px-6 py-2 rounded mt-6 flex items-center gap-2"
             onClick={handleAddToCart}
           >
             <FaShoppingBag /> Add to Cart

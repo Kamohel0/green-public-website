@@ -54,7 +54,7 @@ const Navbar = () => {
               Home
             </button>
             <button
-              onClick={() => handleScroll("about")}
+              onClick={() => handleScroll("contact")}
               className="hover:text-green-600 transition"
             >
               About
