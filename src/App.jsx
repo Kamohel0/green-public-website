@@ -11,6 +11,9 @@ import Cart from "./components/Cart/Cart";
 import ProfilePage from "./components/Profile/ProfilePage";
 import Payment from "./components/Payment/payment";
 import Login from "./components/Profile/Login";
+// If you have About and Services components, import them here
+// import About from "./components/About/About";
+// import Services from "./components/Services/Services";
 
 const App = () => {
   return (
@@ -21,25 +24,59 @@ const App = () => {
           path="/"
           element={
             <>
-              <Hero />
-              <Products />
-              <Reviews />
-              <Deals />
-              <Footer />
-          
+              {/* Home Section */}
+              <section id="home">
+                <Hero />
+              </section>
 
+              {/* About Section */}
+              {/* Uncomment when About component exists */}
+              {/* <section id="about">
+                <About />
+              </section> */}
+
+              {/* Services Section */}
+              {/* Uncomment when Services component exists */}
+              {/* <section id="services">
+                <Services />
+              </section> */}
+
+              {/* Products Section */}
+              <section id="products">
+                <Products />
+              </section>
+
+              {/* Reviews Section */}
+              <section id="reviews">
+                <Reviews />
+              </section>
+
+              {/* Deals Section */}
+              <section id="deals">
+                <Deals />
+              </section>
+
+              {/* Contact Section */}
+              <section id="contact">
+                <Footer />
+              </section>
             </>
           }
         />
+
         {/* Product detail page */}
         <Route path="/product/:id" element={<ProductDetail />} />
-          {/* Cart page */}
+
+        {/* Cart page */}
         <Route path="/cart" element={<Cart />} />
 
+        {/* Profile page */}
         <Route path="/profile" element={<ProfilePage />} />
 
+        {/* Payment page */}
         <Route path="/payment" element={<Payment />} />
 
+        {/* Login page */}
         <Route path="/login" element={<Login />} />
       </Routes>
     </div>

@@ -57,11 +57,8 @@ const Hero = () => {
         </motion.p>
 
         <motion.button
-          className="bg-[#3c6e33] hover:bg-[#295024] transition-colors duration-300 text-white px-10 py-3 rounded-full shadow-lg text-lg font-semibold hover:scale-105 active:scale-95"
-          style={{
-            fontFamily: "'Playfair Display', serif",
-            letterSpacing: "1px",
-          }}
+className="bg-[#15803d] hover:bg-green-800 text-white px-6 py-2 rounded"
+          style={{ fontFamily: "'Playfair Display', serif" }}
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ delay: 1.1, duration: 0.6 }}

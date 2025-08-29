@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   User,
   Heart,
@@ -6,137 +6,52 @@ import {
   Bell,
   CreditCard,
   LogOut,
-  ArrowRight,
 } from "lucide-react";
 import Footer from "../footer/Footer";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "@/components/ui/tabs";
 
-const SidebarLink = ({ icon: Icon, label, active, onClick }) => (
-  <div
-    onClick={onClick}
-    className={`flex items-center gap-2 py-2 px-4 cursor-pointer hover:bg-gray-100 ${
-      active ? "border-r-4 border-black bg-gray-100" : ""
+// Sidebar Link Component
+const SidebarLink = ({ icon: Icon, label, value, active, onClick }) => (
+  <button
+    onClick={() => onClick(value)}
+    className={`flex items-center w-full px-3 py-2 mb-2 text-sm rounded-md transition ${
+      active ? "bg-gray-200 font-bold" : "hover:bg-gray-100 text-gray-700"
     }`}
   >
-    <Icon className="w-5 h-5" />
-    <span className="flex-grow">{label}</span>
-    {active && <ArrowRight className="w-4 h-4" />}
-  </div>
-);
-
-const ProfileTab = () => (
-  <div className="grid grid-cols-2 gap-5">
-    <input type="text" placeholder="Name" className="bg-gray-100 p-4" />
-    <input type="text" placeholder="Surname" className="bg-gray-100 p-4" />
-    <input
-      type="text"
-      placeholder="Address"
-      className="bg-gray-100 p-4 col-span-2"
-    />
-    <input type="text" placeholder="Province" className="bg-gray-100 p-4" />
-    <input
-      type="text"
-      placeholder="Phone Number"
-      className="bg-gray-100 p-4"
-    />
-    <input type="text" placeholder="Zip Code" className="bg-gray-100 p-4" />
-    <input type="text" placeholder="City" className="bg-gray-100 p-4" />
-    <button className="bg-green-900 text-white px-6 py-2 mt-4 rounded col-span-2">
-      Save
-    </button>
-  </div>
-);
-
-const AddressTab = () => (
-  <div>
-    <h3 className="text-lg font-semibold mb-2">Saved Address</h3>
-    <p>123 Example Street, Johannesburg</p>
-    <button className="mt-4 bg-gray-800 text-white px-4 py-2 rounded">
-      Edit Address
-    </button>
-  </div>
-);
-
-const PasswordTab = () => (
-  <div className="grid grid-cols-1 gap-5">
-    <input
-      type="password"
-      placeholder="Current Password"
-      className="bg-gray-100 p-4"
-    />
-    <input
-      type="password"
-      placeholder="New Password"
-      className="bg-gray-100 p-4"
-    />
-    <input
-      type="password"
-      placeholder="Confirm Password"
-      className="bg-gray-100 p-4"
-    />
-    <button className="bg-green-900 text-white px-6 py-2 mt-4 rounded">
-      Change Password
-    </button>
-  </div>
-);
-
-const WishlistTab = ({ wishlist }) => (
-  <div>
-    <h3 className="text-lg font-semibold mb-4">Your Wishlist</h3>
-    {wishlist.length === 0 ? (
-      <p>No items yet.</p>
-    ) : (
-      <ul className="space-y-4">
-        {wishlist.map((item, i) => (
-          <li
-            key={i}
-            className="border p-4 rounded shadow-sm flex justify-between items-center"
-          >
-            <span>{item.name}</span>
-            <button className="text-red-600">Remove</button>
-          </li>
-        ))}
-      </ul>
-    )}
-  </div>
-);
-
-const OrdersTab = () => (
-  <div>
-    <h3 className="text-lg font-semibold mb-4">Your Orders</h3>
-    <p>No recent orders.</p>
-  </div>
-);
-
-const PreferencesTab = () => (
-  <div>
-    <h3 className="text-lg font-semibold mb-4">Notifications & Preferences</h3>
-    <p>You are subscribed to email notifications.</p>
-  </div>
-);
-
-const AccountTab = () => (
-  <div>
-    <h3 className="text-lg font-semibold mb-4">Your Balance</h3>
-    <p>R550.00 available</p>
-  </div>
+    <Icon className="mr-2 h-4 w-4" />
+    {label}
+  </button>
 );
 
 export const ProfilePage = () => {
-  const [activeTab, setActiveTab] = useState("Profile");
-const [wishlist, setWishlist] = useState(() =>
-  JSON.parse(localStorage.getItem("wishlist") || "[]")
-);
+  // Tabs state
+  const [activeTab, setActiveTab] = useState("profile");
 
+  // Wishlist state
+  const [wishlist, setWishlist] = useState(() =>
+    JSON.parse(localStorage.getItem("wishlist") || "[]")
+  );
 
-  const tabContent = {
-    Profile: <ProfileTab />,
-    Address: <AddressTab />,
-    "Change Password": <PasswordTab />,
-    Wishlist: <WishlistTab wishlist={wishlist} />,
-    Orders: <OrdersTab />,
-    Preferences: <PreferencesTab />,
-    "Money Account": <AccountTab />,
-  };
+  // Sync wishlist with localStorage
+  useEffect(() => {
+    localStorage.setItem("wishlist", JSON.stringify(wishlist));
+  }, [wishlist]);
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -148,42 +63,12 @@ const [wishlist, setWishlist] = useState(() =>
         >
           <h2 className="text-lg font-semibold mb-4">Hi, Kamo</h2>
           <h3 className="font-bold text-md mb-4">Profile</h3>
-          <SidebarLink
-            icon={User}
-            label="Profile"
-            active={activeTab === "Profile"}
-            onClick={() => setActiveTab("Profile")}
-          />
-          <SidebarLink
-            icon={Heart}
-            label="Wishlist"
-            active={activeTab === "Wishlist"}
-            onClick={() => setActiveTab("Wishlist")}
-          />
-          <SidebarLink
-            icon={ShoppingBag}
-            label="Orders"
-            active={activeTab === "Orders"}
-            onClick={() => setActiveTab("Orders")}
-          />
-          <SidebarLink
-            icon={Bell}
-            label="Preferences"
-            active={activeTab === "Preferences"}
-            onClick={() => setActiveTab("Preferences")}
-          />
-          <SidebarLink
-            icon={CreditCard}
-            label="Money Account"
-            active={activeTab === "Money Account"}
-            onClick={() => setActiveTab("Money Account")}
-          />
-          <SidebarLink
-            icon={LogOut}
-            label="Log Out"
-            active={false}
-            onClick={() => alert("Logging out...")}
-          />
+          <SidebarLink icon={User} label="Profile" value="profile" active={activeTab === "profile"} onClick={setActiveTab} />
+          <SidebarLink icon={Heart} label="Wishlist" value="wishlist" active={activeTab === "wishlist"} onClick={setActiveTab} />
+          <SidebarLink icon={ShoppingBag} label="Orders" value="orders" active={activeTab === "orders"} onClick={setActiveTab} />
+          <SidebarLink icon={Bell} label="Preferences" value="preferences" active={activeTab === "preferences"} onClick={setActiveTab} />
+          <SidebarLink icon={CreditCard} label="Money Account" value="account" active={activeTab === "account"} onClick={setActiveTab} />
+          <SidebarLink icon={LogOut} label="Log Out" value="logout" active={false} onClick={() => alert("Logging out...")} />
         </div>
 
         {/* Main Content */}
@@ -191,48 +76,145 @@ const [wishlist, setWishlist] = useState(() =>
           className="w-full lg:w-3/4 pl-4 mb-6"
           style={{ fontFamily: "'Playfair Display', serif" }}
         >
-          {/* Top Tabs for Profile/Address/Password */}
-          {activeTab === "Profile" ||
-          activeTab === "Address" ||
-          activeTab === "Change Password" ? (
-            <div className="border-b mb-4">
-              <ul className="flex space-x-4 text-sm">
-                <li
-                  className={`cursor-pointer ${
-                    activeTab === "Profile"
-                      ? "border-b-2 border-black pb-1"
-                      : ""
-                  }`}
-                  onClick={() => setActiveTab("Profile")}
-                >
-                  Profile
-                </li>
-                <li
-                  className={`cursor-pointer ${
-                    activeTab === "Address"
-                      ? "border-b-2 border-black pb-1"
-                      : ""
-                  }`}
-                  onClick={() => setActiveTab("Address")}
-                >
-                  Address
-                </li>
-                <li
-                  className={`cursor-pointer ${
-                    activeTab === "Change Password"
-                      ? "border-b-2 border-black pb-1"
-                      : ""
-                  }`}
-                  onClick={() => setActiveTab("Change Password")}
-                >
-                  Change Password
-                </li>
-              </ul>
-            </div>
-          ) : null}
+          <Tabs value={activeTab} onValueChange={setActiveTab}>
+            <TabsList>
+              <TabsTrigger value="profile">Profile</TabsTrigger>
+              <TabsTrigger value="address">Address</TabsTrigger>
+              <TabsTrigger value="password">Change Password</TabsTrigger>
+              {/*<TabsTrigger value="wishlist">Wishlist</TabsTrigger>
+              <TabsTrigger value="orders">Orders</TabsTrigger>
+              <TabsTrigger value="preferences">Preferences</TabsTrigger>
+              <TabsTrigger value="account">Money Account</TabsTrigger> */}
+            </TabsList>
 
-          {/* Dynamic Tab Content */}
-          {tabContent[activeTab]}
+            {/* Profile */}
+            <TabsContent value="profile">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Profile</CardTitle>
+                  <CardDescription>Update your profile information.</CardDescription>
+                </CardHeader>
+                <CardContent className="grid grid-cols-2 gap-5">
+                  <Input placeholder="Name" className="bg-gray-100 p-4" />
+                  <Input placeholder="Surname" className="bg-gray-100 p-4" />
+                  <Input placeholder="Address" className="bg-gray-100 p-4 col-span-2" />
+                  <Input placeholder="Province" className="bg-gray-100 p-4" />
+                  <Input placeholder="Phone Number" className="bg-gray-100 p-4" />
+                  <Input placeholder="Zip Code" className="bg-gray-100 p-4" />
+                  <Input placeholder="City" className="bg-gray-100 p-4" />
+                </CardContent>
+                <CardFooter>
+                  <Button>Save</Button>
+                </CardFooter>
+              </Card>
+            </TabsContent>
+
+            {/* Address */}
+            <TabsContent value="address">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Saved Address</CardTitle>
+                  <CardDescription>123 Example Street, Johannesburg</CardDescription>
+                </CardHeader>
+                <CardFooter>
+                  <Button>Edit Address</Button>
+                </CardFooter>
+              </Card>
+            </TabsContent>
+
+            {/* Change Password */}
+            <TabsContent value="password">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Change Password</CardTitle>
+                  <CardDescription>Update your password here.</CardDescription>
+                </CardHeader>
+                <CardContent className="grid gap-6">
+                  <div className="grid gap-3">
+                    <Label htmlFor="current-password">Current Password</Label>
+                    <Input id="current-password" type="password" />
+                  </div>
+                  <div className="grid gap-3">
+                    <Label htmlFor="new-password">New Password</Label>
+                    <Input id="new-password" type="password" />
+                  </div>
+                  <div className="grid gap-3">
+                    <Label htmlFor="confirm-password">Confirm Password</Label>
+                    <Input id="confirm-password" type="password" />
+                  </div>
+                </CardContent>
+                <CardFooter>
+                  <Button>Change Password</Button>
+                </CardFooter>
+              </Card>
+            </TabsContent>
+
+            {/* Wishlist */}
+            <TabsContent value="wishlist">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Your Wishlist</CardTitle>
+                  <CardDescription>
+                    {wishlist.length === 0 ? "No items yet." : "Your saved items."}
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  {wishlist.length > 0 && (
+                    <ul className="space-y-4">
+                      {wishlist.map((item, i) => (
+                        <li
+                          key={i}
+                          className="border p-4 rounded shadow-sm flex justify-between items-center"
+                        >
+                          <span>{item.name}</span>
+                          <Button
+                            variant="destructive"
+                            onClick={() =>
+                              setWishlist((prev) => prev.filter((_, index) => index !== i))
+                            }
+                          >
+                            Remove
+                          </Button>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            {/* Orders */}
+            <TabsContent value="orders">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Your Orders</CardTitle>
+                  <CardDescription>No recent orders.</CardDescription>
+                </CardHeader>
+              </Card>
+            </TabsContent>
+
+            {/* Preferences */}
+            <TabsContent value="preferences">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Notifications & Preferences</CardTitle>
+                  <CardDescription>
+                    You are subscribed to email notifications.
+                  </CardDescription>
+                </CardHeader>
+              </Card>
+            </TabsContent>
+
+            {/* Account */}
+            <TabsContent value="account">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Your Balance</CardTitle>
+                  <CardDescription>R550.00 available</CardDescription>
+                </CardHeader>
+              </Card>
+            </TabsContent>
+          </Tabs>
         </div>
       </main>
       <Footer />

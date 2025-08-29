@@ -1,15 +1,17 @@
-import React from "react";
+import * as React from "react"
+import { Slot } from "@radix-ui/react-slot"
+import { cn } from "@/lib/utils"
+import { buttonVariants } from "./button-variants"
 
-export const Button = ({ children, className = "", variant = "default", ...props }) => {
-  const baseStyles = "px-4 py-2 rounded-md font-medium focus:outline-none";
-  const variantStyles =
-    variant === "outline"
-      ? "border border-gray-300 text-gray-700 hover:bg-gray-100"
-      : "bg-blue-600 text-white hover:bg-blue-700";
-
+const Button = React.forwardRef(({ className, variant, size, asChild = false, ...props }, ref) => {
+  const Comp = asChild ? Slot : "button"
   return (
-    <button className={`${baseStyles} ${variantStyles} ${className}`} {...props}>
-      {children}
-    </button>
+    <Comp
+      className={cn(buttonVariants({ variant, size, className }))}
+      ref={ref}
+      {...props} />
   );
-};
+})
+Button.displayName = "Button"
+
+export { Button }
