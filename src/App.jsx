@@ -12,6 +12,7 @@ import ProfilePage from "./components/Profile/ProfilePage";
 import Payment from "./components/Payment/payment";
 import Login from "./components/Profile/Login";
 import About from "./components/About/about";
+import Signup from "./components/Profile/SignUp";
 
 const App = () => {
   return (
@@ -79,6 +80,9 @@ const App = () => {
 
         {/* Login page */}
         <Route path="/login" element={<Login />} />
+
+        {/* Sign Up page */}
+        <Route path="/signup" element={<Signup />} />
       </Routes>
     </div>
   );

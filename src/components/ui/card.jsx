@@ -45,14 +45,13 @@ const CardFooter = React.forwardRef(({ className, ...props }, ref) => (
     className={cn("flex items-center p-6 pt-0", className)}
     {...props} />
 ))
-CardFooter.displayName = "CardFooter"
+CardFooter.displayName = "CardFooter" 
 
 const CardAction = React.forwardRef(({ className, ...props }, ref) => (
   <div
     ref={ref}
-    className={cn("flex justify-end p-4", className)}
-    {...props}
-  />
+    className={cn("w-full text-center", className)}
+    {...props} />
 ))
 CardAction.displayName = "CardAction"
 
