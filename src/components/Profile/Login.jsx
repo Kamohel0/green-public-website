@@ -26,19 +26,42 @@ const Login = () => {
 
 const handleLogin = async (e) => {
   e.preventDefault();
-  setErrorMsg("");
-  setLoading(true);
+
+  if (!email || !password) {
+    setErrorMsg("Email and password are required.");
+    return;
+  }
 
   try {
-    const { data } = await login({ email, password });
+    setErrorMsg("");
+    setLoading(true);
 
-    // Store token
-    localStorage.setItem("accessToken", data.accessToken);
+    const response = await login({ email: email.trim(), password });
 
-    alert("Login successful!");
-    window.location.href = "/products";
+    //  save JWT or session to localStorage
+    if (response.data?.accessToken) {
+      localStorage.setItem("accessToken", response.data.accessToken);
+    }
+
+    // Save user info so you can link purchases to them
+    if (response.data?.user) {
+      localStorage.setItem("user", JSON.stringify(response.data.user));
+    }
+
+    console.log("Login success:", response.data);
+
+    // Redirect to payment after successful login
+    navigate("/payment");
+
   } catch (err) {
-    setErrorMsg(err.response?.data?.message || "Login failed");
+    console.error("Login error:", err);
+    if (err.response?.status === 400) {
+      setErrorMsg("Invalid email or password.");
+    } else if (err.response?.status === 401) {
+      setErrorMsg("Unauthorized. Please check credentials.");
+    } else {
+      setErrorMsg("Something went wrong. Try again.");
+    }
   } finally {
     setLoading(false);
   }
