@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import Product1 from "../../assets/gel.png";
 import Product2 from "../../assets/butter.png";
@@ -11,28 +12,51 @@ const items = [
   { img: Product4, name: "Sea Moss Lip Balm", price: "R 80", id: 4 },
 ];
 
-const Products = () => {
+const Products = ({ searchTerm }) => {
+  const [search, setSearch] = useState(searchTerm || "");
+
+  // Filter items based on search
+  const filteredItems = items.filter((p) =>
+    p.name.toLowerCase().includes(search.toLowerCase())
+  );
+
   return (
-    <div className="bg-white py-12">
+    <div className="bg-white py-12" id="products">
       <div className="container mx-auto px-4">
-        <h2 className="text-2xl font-bold text-center mb-8" style={{ fontFamily: "'Playfair Display', serif" }}>Products</h2>
-        <div className="grid grid-cols-1 md:grid-cols-4 sm:grid-cols-4 gap-8">
-          {items.map((p) => (
-            <Link to={`/product/${p.id}`} key={p.id}>
-              <div className="bg-[#f8eee7] p-4 rounded-md text-center shadow-sm cursor-pointer hover:shadow-lg transition" style={{ fontFamily: "'Playfair Display', serif" }}>
-                <img src={p.img} alt={p.name} className="mx-auto w-32 mb-3" />
-                <p className="font-semibold">{p.name}</p>
-                <p className="text-sm text-gray-600">{p.price}</p>
-              </div>
-            </Link>
-          ))}
+        <h2
+          className="text-2xl font-bold text-center mb-8"
+          style={{ fontFamily: "'Playfair Display', serif" }}
+        >
+          Products
+        </h2>
+
+
+
+        {/* Product Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-4 sm:grid-cols-2 gap-8">
+          {filteredItems.length > 0 ? (
+            filteredItems.map((p) => (
+              <Link to={`/product/${p.id}`} key={p.id}>
+                <div
+                  className="bg-[#f8eee7] p-4 rounded-md text-center shadow-sm cursor-pointer hover:shadow-lg transition"
+                  style={{ fontFamily: "'Playfair Display', serif" }}
+                >
+                  <img
+                    src={p.img}
+                    alt={p.name}
+                    className="mx-auto w-32 mb-3"
+                  />
+                  <p className="font-semibold">{p.name}</p>
+                  <p className="text-sm text-gray-600">{p.price}</p>
+                </div>
+              </Link>
+            ))
+          ) : (
+            <p className="text-center text-gray-500 col-span-4">
+              No products found.
+            </p>
+          )}
         </div>
-        {/* <div className="text-center mt-8">
-          <button className="bg-[#15803d] hover:bg-green-800 text-white px-6 py-2 rounded"
-          style={{ fontFamily: "'Playfair Display', serif" }}>
-            View All
-          </button>
-        </div> */}
       </div>
     </div>
   );

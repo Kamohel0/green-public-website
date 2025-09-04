@@ -141,8 +141,8 @@ const About = () => {
       ))}
     </CarouselContent>
 
-    <CarouselPrevious className="hidden md:flex" />
-    <CarouselNext className="hidden md:flex" />
+    {/* <CarouselPrevious className="hidden md:flex" />
+    <CarouselNext className="hidden md:flex" /> */}
   </Carousel>
 </section>
 

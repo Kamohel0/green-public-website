@@ -5,12 +5,33 @@ import { FaMinus, FaPlus, FaHeart, FaShoppingBag, FaStar } from "react-icons/fa"
 import { FiThumbsUp } from "react-icons/fi";
 import Footer from "../footer/Footer";
 import useCartStore from "../store/useCartStore"; // <-- zustand store
+import { Link } from "react-router-dom";
+
 
 // Product images
 import Product1 from "../../assets/gel.png";
 import Product2 from "../../assets/butter.png";
 import Product3 from "../../assets/oil.png";
 import Product4 from "../../assets/balm.png";
+import Slider from "react-slick";
+
+
+const settings = {
+  dots: true,
+  infinite: true,
+  speed: 500,
+  slidesToShow: 2, // 2 at a time for desktop
+  slidesToScroll: 1,
+  responsive: [
+    {
+      breakpoint: 768, // for mobile
+      settings: {
+        slidesToShow: 1,
+      },
+    },
+  ],
+};
+
 
 // Product data
 const items = [
@@ -148,6 +169,7 @@ export default function ProductDetail() {
         </p>
 
         {/* Helpful */}
+        <div className="mt-1 flex items-center space-x-4">
         <motion.button
           whileTap={{ scale: 0.95 }}
           className={`flex items-center gap-2 border rounded-full px-4 py-1 mt-4 text-sm ${
@@ -157,6 +179,34 @@ export default function ProductDetail() {
         >
           <FiThumbsUp /> Helpful ({isHelpful ? 3 : 2})
         </motion.button>
+        </div>
+
+
+{/* More Products */}
+<div className="px-4 max-w-6xl mx-auto mb-16 mt-4">
+  <h3 className="text-xl font-semibold mb-4 border-b pb-2">You may also like</h3>
+
+  <Slider {...settings} className="relative">
+    {items.filter((p) => p.id !== product.id).map((p) => (
+      <div key={p.id} className="p-3">
+        <Link
+          to={`/product/${p.id}`}
+          className="block border rounded-lg p-4 hover:shadow-lg transition bg-white"
+        >
+          <img
+            src={p.img}
+            alt={p.name}
+            className="w-full h-40 object-contain mb-2"
+          />
+          <h4 className="font-medium text-sm">{p.name}</h4>
+          <p className="text-sm text-gray-600">{p.price}</p>
+        </Link>
+      </div>
+    ))}
+  </Slider>
+</div>
+
+
       </motion.div>
 
       {/* Footer */}

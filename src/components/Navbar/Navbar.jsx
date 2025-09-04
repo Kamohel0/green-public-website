@@ -41,6 +41,17 @@ const Navbar = () => {
     }
   };
 
+  // mobile search
+  const [searchTerm, setSearchTerm] = useState("");
+
+const handleSearch = (e) => {
+  if (e.key === "Enter" && searchTerm.trim()) {
+    navigate(`/products?search=${encodeURIComponent(searchTerm.trim())}`);
+    setShowSearch(false); // close mobile dropdown
+  }
+};
+
+
   return (
     <div className="sticky top-0 z-50 bg-primary/40 backdrop-blur-sm shadow-md">
       <div className="py-2">
@@ -81,11 +92,14 @@ const Navbar = () => {
 
           {/* Desktop Search & Icons */}
           <div className="hidden md:flex items-center gap-4 ml-4">
-            <input
-              type="text"
-              placeholder="Search..."
-              className="w-[200px] hover:w-[300px] transition-all duration-300 rounded-full border border-gray-300 px-2 py-1 focus:outline-none focus:border-green-500"
-            />
+<input
+  type="text"
+  placeholder="Search..."
+  value={searchTerm}
+  onChange={(e) => setSearchTerm(e.target.value)}
+  onKeyDown={handleSearch}
+  className="w-[200px] hover:w-[300px] transition-all duration-300 rounded-full border border-gray-300 px-2 py-1 focus:outline-none focus:border-green-500"
+/>
             <Link to="/payment" className="relative group">
               <ShoppingCart className="h-6 w-6 text-gray-700 hover:text-green-600 transition" />
               <span className="absolute -top-2 -right-2 bg-green-600 text-white text-xs rounded-full px-1">

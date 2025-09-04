@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -14,9 +15,46 @@ import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 
 const Login = () => {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [errorMsg, setErrorMsg] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    setErrorMsg("");
+    setLoading(true);
+
+    try {
+      const res = await fetch("http://localhost:8080/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        console.log("✅ Login success:", data);
+
+        // Save token to localStorage (or context)
+        localStorage.setItem("token", data.token);
+
+        alert("Login successful!");
+        // redirect to dashboard/products page
+        window.location.href = "/products";
+      } else {
+        const errData = await res.json();
+        setErrorMsg(errData.message || "Login failed");
+      }
+    } catch (err) {
+      setErrorMsg("Server unreachable. Try again later.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#DAB6A2] to-[#e9d6c5]  px-5">
-      {/* Motion wrapper for fade/slide-in */}
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#DAB6A2] to-[#e9d6c5] px-5">
       <motion.div
         initial={{ opacity: 0, y: 50, scale: 0.95 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -34,7 +72,11 @@ const Login = () => {
           </CardHeader>
 
           <CardContent>
-            <form onSubmit={(e) => e.preventDefault()} className="space-y-6">
+            <form onSubmit={handleLogin} className="space-y-6">
+              {errorMsg && (
+                <p className="text-red-500 text-sm text-center">{errorMsg}</p>
+              )}
+
               <motion.div
                 initial={{ opacity: 0, x: -30 }}
                 animate={{ opacity: 1, x: 0 }}
@@ -47,7 +89,8 @@ const Login = () => {
                   type="email"
                   placeholder="m@example.com"
                   required
-                  className="w-full"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
                 />
               </motion.div>
 
@@ -59,22 +102,26 @@ const Login = () => {
               >
                 <div className="flex items-center justify-between">
                   <Label htmlFor="password">Password</Label>
-                  <a
-                    href="#"
-                    className="text-sm text-blue-600 hover:underline"
-                  >
+                  <a href="#" className="text-sm text-blue-600 hover:underline">
                     Forgot your password?
                   </a>
                 </div>
-                <Input id="password" type="password" required className="w-full" />
+                <Input
+                  id="password"
+                  type="password"
+                  required
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                />
               </motion.div>
 
               <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
                 <Button
                   type="submit"
                   className="w-full bg-[#3c6e33] hover:bg-[#295024] text-white text-lg rounded-xl py-6"
+                  disabled={loading}
                 >
-                  Login
+                  {loading ? "Logging in..." : "Login"}
                 </Button>
               </motion.div>
             </form>
