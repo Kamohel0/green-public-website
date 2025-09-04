@@ -25,33 +25,95 @@ import {
   TabsList,
   TabsTrigger,
 } from "@/components/ui/tabs";
+import { getProfile, updateProfile, changePassword } from "@/api/authApi";
 
-// Sidebar Link Component
+
+
+
 const SidebarLink = ({ icon: Icon, label, value, active, onClick }) => (
-  <button
-    onClick={() => onClick(value)}
-    className={`flex items-center w-full px-3 py-2 mb-2 text-sm rounded-md transition ${
-      active ? "bg-gray-200 font-bold" : "hover:bg-gray-100 text-gray-700"
+  <div
+    className={`flex items-center p-2 cursor-pointer ${
+      active ? "bg-gray-100 font-semibold" : ""
     }`}
+    onClick={() => onClick(value)}
   >
-    <Icon className="mr-2 h-4 w-4" />
+    <Icon className="w-5 h-5 mr-2" />
     {label}
-  </button>
+  </div>
 );
 
-export const ProfilePage = () => {
-  // Tabs state
+const ProfilePage = () => {
   const [activeTab, setActiveTab] = useState("profile");
 
-  // Wishlist state
+  const [profile, setProfile] = useState({
+    name: "",
+    surname: "",
+    address: "",
+    province: "",
+    phone: "",
+    zip: "",
+    city: "",
+  });
+  const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState("");
+
   const [wishlist, setWishlist] = useState(() =>
     JSON.parse(localStorage.getItem("wishlist") || "[]")
   );
 
-  // Sync wishlist with localStorage
   useEffect(() => {
     localStorage.setItem("wishlist", JSON.stringify(wishlist));
   }, [wishlist]);
+
+  // ✅ Fetch profile from backend
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        setLoading(true);
+        const { data } = await getProfile();
+        setProfile(data);
+      } catch (err) {
+        setMessage("Failed to load profile.");
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchProfile();
+  }, []);
+
+  // ✅ Save profile changes
+  const handleProfileSave = async () => {
+    setLoading(true);
+    setMessage("");
+    try {
+      await updateProfile(profile);
+      setMessage(" Profile updated successfully!");
+    } catch (err) {
+      setMessage(" Failed to update profile.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // ✅ Change password
+  const handlePasswordChange = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setMessage("");
+
+    const currentPassword = document.getElementById("current-password").value;
+    const newPassword = document.getElementById("new-password").value;
+    const confirmPassword = document.getElementById("confirm-password").value;
+
+    try {
+      await changePassword({ currentPassword, newPassword, confirmPassword });
+      setMessage("Password updated!");
+    } catch (err) {
+      setMessage(" Failed to change password.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -61,14 +123,54 @@ export const ProfilePage = () => {
           className="w-full lg:w-1/4 border-r"
           style={{ fontFamily: "'Playfair Display', serif" }}
         >
-          <h2 className="text-lg font-semibold mb-4">Hi, Kamo</h2>
+          <h2 className="text-lg font-semibold mb-4">Hi, {profile.name}</h2>
           <h3 className="font-bold text-md mb-4">Profile</h3>
-          <SidebarLink icon={User} label="Profile" value="profile" active={activeTab === "profile"} onClick={setActiveTab} />
-          <SidebarLink icon={Heart} label="Wishlist" value="wishlist" active={activeTab === "wishlist"} onClick={setActiveTab} />
-          <SidebarLink icon={ShoppingBag} label="Orders" value="orders" active={activeTab === "orders"} onClick={setActiveTab} />
-          <SidebarLink icon={Bell} label="Preferences" value="preferences" active={activeTab === "preferences"} onClick={setActiveTab} />
-          <SidebarLink icon={CreditCard} label="Money Account" value="account" active={activeTab === "account"} onClick={setActiveTab} />
-          <SidebarLink icon={LogOut} label="Log Out" value="logout" active={false} onClick={() => alert("Logging out...")} />
+
+          <SidebarLink
+            icon={User}
+            label="Profile"
+            value="profile"
+            active={activeTab === "profile"}
+            onClick={setActiveTab}
+          />
+          <SidebarLink
+            icon={Heart}
+            label="Wishlist"
+            value="wishlist"
+            active={activeTab === "wishlist"}
+            onClick={setActiveTab}
+          />
+          <SidebarLink
+            icon={ShoppingBag}
+            label="Orders"
+            value="orders"
+            active={activeTab === "orders"}
+            onClick={setActiveTab}
+          />
+          <SidebarLink
+            icon={Bell}
+            label="Preferences"
+            value="preferences"
+            active={activeTab === "preferences"}
+            onClick={setActiveTab}
+          />
+          <SidebarLink
+            icon={CreditCard}
+            label="Money Account"
+            value="account"
+            active={activeTab === "account"}
+            onClick={setActiveTab}
+          />
+          <SidebarLink
+            icon={LogOut}
+            label="Log Out"
+            value="logout"
+            active={false}
+            onClick={() => {
+              localStorage.removeItem("accessToken");
+              window.location.href = "/login";
+            }}
+          />
         </div>
 
         {/* Main Content */}
@@ -76,15 +178,15 @@ export const ProfilePage = () => {
           className="w-full lg:w-3/4 pl-4 mb-6"
           style={{ fontFamily: "'Playfair Display', serif" }}
         >
+          {message && (
+            <p className="mb-4 text-center text-sm text-red-500">{message}</p>
+          )}
+
           <Tabs value={activeTab} onValueChange={setActiveTab}>
             <TabsList>
               <TabsTrigger value="profile">Profile</TabsTrigger>
               <TabsTrigger value="address">Address</TabsTrigger>
               <TabsTrigger value="password">Change Password</TabsTrigger>
-              {/*<TabsTrigger value="wishlist">Wishlist</TabsTrigger>
-              <TabsTrigger value="orders">Orders</TabsTrigger>
-              <TabsTrigger value="preferences">Preferences</TabsTrigger>
-              <TabsTrigger value="account">Money Account</TabsTrigger> */}
             </TabsList>
 
             {/* Profile */}
@@ -92,19 +194,66 @@ export const ProfilePage = () => {
               <Card>
                 <CardHeader>
                   <CardTitle>Profile</CardTitle>
-                  <CardDescription>Update your profile information.</CardDescription>
+                  <CardDescription>
+                    Update your profile information.
+                  </CardDescription>
                 </CardHeader>
                 <CardContent className="grid grid-cols-2 gap-5">
-                  <Input placeholder="Name" className="bg-gray-100 p-4" />
-                  <Input placeholder="Surname" className="bg-gray-100 p-4" />
-                  <Input placeholder="Address" className="bg-gray-100 p-4 col-span-2" />
-                  <Input placeholder="Province" className="bg-gray-100 p-4" />
-                  <Input placeholder="Phone Number" className="bg-gray-100 p-4" />
-                  <Input placeholder="Zip Code" className="bg-gray-100 p-4" />
-                  <Input placeholder="City" className="bg-gray-100 p-4" />
+                  <Input
+                    placeholder="Name"
+                    value={profile.name}
+                    onChange={(e) =>
+                      setProfile({ ...profile, name: e.target.value })
+                    }
+                  />
+                  <Input
+                    placeholder="Surname"
+                    value={profile.surname}
+                    onChange={(e) =>
+                      setProfile({ ...profile, surname: e.target.value })
+                    }
+                  />
+                  <Input
+                    placeholder="Address"
+                    className="col-span-2"
+                    value={profile.address}
+                    onChange={(e) =>
+                      setProfile({ ...profile, address: e.target.value })
+                    }
+                  />
+                  <Input
+                    placeholder="Province"
+                    value={profile.province}
+                    onChange={(e) =>
+                      setProfile({ ...profile, province: e.target.value })
+                    }
+                  />
+                  <Input
+                    placeholder="Phone Number"
+                    value={profile.phone}
+                    onChange={(e) =>
+                      setProfile({ ...profile, phone: e.target.value })
+                    }
+                  />
+                  <Input
+                    placeholder="Zip Code"
+                    value={profile.zip}
+                    onChange={(e) =>
+                      setProfile({ ...profile, zip: e.target.value })
+                    }
+                  />
+                  <Input
+                    placeholder="City"
+                    value={profile.city}
+                    onChange={(e) =>
+                      setProfile({ ...profile, city: e.target.value })
+                    }
+                  />
                 </CardContent>
                 <CardFooter>
-                  <Button>Save</Button>
+                  <Button onClick={handleProfileSave} disabled={loading}>
+                    {loading ? "Saving..." : "Save"}
+                  </Button>
                 </CardFooter>
               </Card>
             </TabsContent>
@@ -114,10 +263,12 @@ export const ProfilePage = () => {
               <Card>
                 <CardHeader>
                   <CardTitle>Saved Address</CardTitle>
-                  <CardDescription>123 Example Street, Johannesburg</CardDescription>
+                  <CardDescription>{profile.address}</CardDescription>
                 </CardHeader>
                 <CardFooter>
-                  <Button>Edit Address</Button>
+                  <Button onClick={() => setActiveTab("profile")}>
+                    Edit Address
+                  </Button>
                 </CardFooter>
               </Card>
             </TabsContent>
@@ -129,89 +280,31 @@ export const ProfilePage = () => {
                   <CardTitle>Change Password</CardTitle>
                   <CardDescription>Update your password here.</CardDescription>
                 </CardHeader>
-                <CardContent className="grid gap-6">
-                  <div className="grid gap-3">
-                    <Label htmlFor="current-password">Current Password</Label>
-                    <Input id="current-password" type="password" />
-                  </div>
-                  <div className="grid gap-3">
-                    <Label htmlFor="new-password">New Password</Label>
-                    <Input id="new-password" type="password" />
-                  </div>
-                  <div className="grid gap-3">
-                    <Label htmlFor="confirm-password">Confirm Password</Label>
-                    <Input id="confirm-password" type="password" />
-                  </div>
-                </CardContent>
-                <CardFooter>
-                  <Button>Change Password</Button>
-                </CardFooter>
-              </Card>
-            </TabsContent>
-
-            {/* Wishlist */}
-            <TabsContent value="wishlist">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Your Wishlist</CardTitle>
-                  <CardDescription>
-                    {wishlist.length === 0 ? "No items yet." : "Your saved items."}
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  {wishlist.length > 0 && (
-                    <ul className="space-y-4">
-                      {wishlist.map((item, i) => (
-                        <li
-                          key={i}
-                          className="border p-4 rounded shadow-sm flex justify-between items-center"
-                        >
-                          <span>{item.name}</span>
-                          <Button
-                            variant="destructive"
-                            onClick={() =>
-                              setWishlist((prev) => prev.filter((_, index) => index !== i))
-                            }
-                          >
-                            Remove
-                          </Button>
-                        </li>
-                      ))}
-                    </ul>
-                  )}
-                </CardContent>
-              </Card>
-            </TabsContent>
-
-            {/* Orders */}
-            <TabsContent value="orders">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Your Orders</CardTitle>
-                  <CardDescription>No recent orders.</CardDescription>
-                </CardHeader>
-              </Card>
-            </TabsContent>
-
-            {/* Preferences */}
-            <TabsContent value="preferences">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Notifications & Preferences</CardTitle>
-                  <CardDescription>
-                    You are subscribed to email notifications.
-                  </CardDescription>
-                </CardHeader>
-              </Card>
-            </TabsContent>
-
-            {/* Account */}
-            <TabsContent value="account">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Your Balance</CardTitle>
-                  <CardDescription>R550.00 available</CardDescription>
-                </CardHeader>
+                <form onSubmit={handlePasswordChange}>
+                  <CardContent className="grid gap-6">
+                    <div className="grid gap-3">
+                      <Label htmlFor="current-password">
+                        Current Password
+                      </Label>
+                      <Input id="current-password" type="password" required />
+                    </div>
+                    <div className="grid gap-3">
+                      <Label htmlFor="new-password">New Password</Label>
+                      <Input id="new-password" type="password" required />
+                    </div>
+                    <div className="grid gap-3">
+                      <Label htmlFor="confirm-password">
+                        Confirm Password
+                      </Label>
+                      <Input id="confirm-password" type="password" required />
+                    </div>
+                  </CardContent>
+                  <CardFooter>
+                    <Button type="submit" disabled={loading}>
+                      {loading ? "Changing..." : "Change Password"}
+                    </Button>
+                  </CardFooter>
+                </form>
               </Card>
             </TabsContent>
           </Tabs>

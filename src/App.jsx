@@ -13,6 +13,7 @@ import Payment from "./components/Payment/payment";
 import Login from "./components/Profile/Login";
 import About from "./components/About/about";
 import Signup from "./components/Profile/SignUp";
+import ForgotPassword from "./components/Profile/forgotpassword";
 
 const App = () => {
   return (
@@ -83,6 +84,10 @@ const App = () => {
 
         {/* Sign Up page */}
         <Route path="/signup" element={<Signup />} />
+
+        {/* forgot password */}
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        
       </Routes>
     </div>
   );

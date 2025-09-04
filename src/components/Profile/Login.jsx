@@ -12,7 +12,9 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { motion } from "framer-motion";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { login } from "@/api/authApi";
+
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -20,38 +22,27 @@ const Login = () => {
   const [errorMsg, setErrorMsg] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const handleLogin = async (e) => {
-    e.preventDefault();
-    setErrorMsg("");
-    setLoading(true);
+  const navigate = useNavigate();
 
-    try {
-      const res = await fetch("http://localhost:8080/api/auth/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
-      });
+const handleLogin = async (e) => {
+  e.preventDefault();
+  setErrorMsg("");
+  setLoading(true);
 
-      if (res.ok) {
-        const data = await res.json();
-        console.log("✅ Login success:", data);
+  try {
+    const { data } = await login({ email, password });
 
-        // Save token to localStorage (or context)
-        localStorage.setItem("token", data.token);
+    // Store token
+    localStorage.setItem("accessToken", data.accessToken);
 
-        alert("Login successful!");
-        // redirect to dashboard/products page
-        window.location.href = "/products";
-      } else {
-        const errData = await res.json();
-        setErrorMsg(errData.message || "Login failed");
-      }
-    } catch (err) {
-      setErrorMsg("Server unreachable. Try again later.");
-    } finally {
-      setLoading(false);
-    }
-  };
+    alert("Login successful!");
+    window.location.href = "/products";
+  } catch (err) {
+    setErrorMsg(err.response?.data?.message || "Login failed");
+  } finally {
+    setLoading(false);
+  }
+};
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#DAB6A2] to-[#e9d6c5] px-5">
@@ -102,9 +93,12 @@ const Login = () => {
               >
                 <div className="flex items-center justify-between">
                   <Label htmlFor="password">Password</Label>
-                  <a href="#" className="text-sm text-blue-600 hover:underline">
+                  <Link
+                    to="/forgot-password"
+                    className="text-sm text-blue-600 hover:underline"
+                  >
                     Forgot your password?
-                  </a>
+                  </Link>
                 </div>
                 <Input
                   id="password"

@@ -14,7 +14,9 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { register } from "@/api/authApi";
+
 
 const Signup = () => {
   const [name, setName] = useState("");
@@ -24,34 +26,25 @@ const Signup = () => {
   const [successMsg, setSuccessMsg] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const handleSignup = async (e) => {
-    e.preventDefault();
-    setErrorMsg("");
-    setSuccessMsg("");
-    setLoading(true);
 
-    try {
-      const res = await fetch("http://localhost:8080/api/auth/signup", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, email, password }),
-      });
+    const handleSignup = async (e) => {
+      e.preventDefault();
+      setErrorMsg("");
+      setSuccessMsg("");
+      setLoading(true);
 
-      if (res.ok) {
-        setSuccessMsg("✅ Account created successfully! You can now log in.");
+      try {
+        await register({ name, email, password });
+        setSuccessMsg(" Account created successfully! Please verify your email.");
         setName("");
         setEmail("");
         setPassword("");
-      } else {
-        const errData = await res.json();
-        setErrorMsg(errData.message || "Signup failed");
+      } catch (err) {
+        setErrorMsg(err.response?.data?.message || "Signup failed");
+      } finally {
+        setLoading(false);
       }
-    } catch (err) {
-      setErrorMsg("Server unreachable. Try again later.");
-    } finally {
-      setLoading(false);
-    }
-  };
+    };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#DAB6A2] to-[#e9d6c5] px-4">
@@ -77,7 +70,9 @@ const Signup = () => {
                 <p className="text-red-500 text-sm text-center">{errorMsg}</p>
               )}
               {successMsg && (
-                <p className="text-green-600 text-sm text-center">{successMsg}</p>
+                <p className="text-green-600 text-sm text-center">
+                  {successMsg}
+                </p>
               )}
 
               <motion.div
@@ -94,7 +89,6 @@ const Signup = () => {
                   required
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  className="w-full"
                 />
               </motion.div>
 
@@ -112,7 +106,6 @@ const Signup = () => {
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="w-full"
                 />
               </motion.div>
 
@@ -129,7 +122,6 @@ const Signup = () => {
                   required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full"
                 />
               </motion.div>
 
