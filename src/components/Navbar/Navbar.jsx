@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { ShoppingCart, User } from "lucide-react";
+import { useState, useEffect, useCallback } from "react";
+import { ShoppingCart, User, Search, Menu, X } from "lucide-react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import {
@@ -17,183 +17,179 @@ import {
 
 const Navbar = () => {
   const [showSearch, setShowSearch] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [isScrolled, setIsScrolled] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
 
-  // Close search on scroll
+  // Navigation items data
+  const navItems = [
+    { id: "home", label: "Home" },
+    { id: "about", label: "About" },
+    { id: "products", label: "Products" },
+    { id: "reviews", label: "Reviews" },
+    { id: "contact", label: "Contact" },
+  ];
+
+  // Handle scroll effect for navbar background
   useEffect(() => {
-    if (showSearch) {
-      const handleScroll = () => setShowSearch(false);
-      window.addEventListener("scroll", handleScroll);
-      return () => window.removeEventListener("scroll", handleScroll);
-    }
+    const handleScroll = () => {
+      const scrolled = window.scrollY > 10;
+      setIsScrolled(scrolled);
+      if (showSearch) {
+        setShowSearch(false);
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
   }, [showSearch]);
 
-  // Helper to scroll to section
-  const handleScroll = (id) => {
+  // Enhanced scroll/navigation helper
+  const handleNavigation = useCallback((id) => {
     if (location.pathname === "/") {
-      const el = document.getElementById(id);
-      if (el) {
-        el.scrollIntoView({ behavior: "smooth" });
+      const element = document.getElementById(id);
+      if (element) {
+        element.scrollIntoView({ 
+          behavior: "smooth",
+          block: "start"
+        });
       }
     } else {
       navigate(`/#${id}`);
     }
-  };
+  }, [location.pathname, navigate]);
 
-  // mobile search
-  const [searchTerm, setSearchTerm] = useState("");
+  // Search handler
+  const handleSearch = useCallback((e) => {
+    if (e.key === "Enter" && searchTerm.trim()) {
+      navigate(`/products?search=${encodeURIComponent(searchTerm.trim())}`);
+      setShowSearch(false);
+      setSearchTerm("");
+    }
+  }, [searchTerm, navigate]);
 
-const handleSearch = (e) => {
-  if (e.key === "Enter" && searchTerm.trim()) {
-    navigate(`/products?search=${encodeURIComponent(searchTerm.trim())}`);
-    setShowSearch(false); // close mobile dropdown
-  }
-};
+  // Close search when clicking outside (mobile)
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (showSearch && !event.target.closest('.search-container')) {
+        setShowSearch(false);
+      }
+    };
 
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [showSearch]);
 
   return (
-    <div className="sticky top-0 z-50 bg-primary/40 backdrop-blur-sm shadow-md">
-      <div className="py-2">
+    <header 
+      className={`sticky top-0 z-50 transition-all duration-300 ${
+        isScrolled 
+          ? "bg-white/95 backdrop-blur-md shadow-lg" 
+          : "bg-primary/40 backdrop-blur-sm shadow-md"
+      }`}
+    >
+      <div className="py-3">
         <div className="max-w-7xl mx-auto px-4 flex justify-between items-center">
-          {/* Desktop Nav Links */}
-          <nav className="hidden md:flex gap-6 items-center">
-            <button
-              onClick={() => handleScroll("home")}
-              className="hover:text-green-600 transition"
-            >
-              Home
-            </button>
-            <button
-              onClick={() => handleScroll("contact")}
-              className="hover:text-green-600 transition"
-            >
-              About
-            </button>
-            <button
-              onClick={() => handleScroll("products")}
-              className="hover:text-green-600 transition"
-            >
-              Products
-            </button>
-            <button
-              onClick={() => handleScroll("reviews")}
-              className="hover:text-green-600 transition"
-            >
-              Reviews
-            </button>
-            <button
-              onClick={() => handleScroll("contact")}
-              className="hover:text-green-600 transition"
-            >
-              Contact
-            </button>
+          
+          {/* Desktop Navigation */}
+          <nav className="hidden md:flex gap-8 items-center" aria-label="Main navigation">
+            {navItems.map((item) => (
+              <button
+                key={item.id}
+                onClick={() => handleNavigation(item.id)}
+                className="text-gray-700 hover:text-green-600 transition-colors duration-200 font-medium py-2 px-1 relative group focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 rounded"
+                aria-label={`Navigate to ${item.label} section`}
+              >
+                {item.label}
+                <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-green-600 transition-all duration-300 group-hover:w-full" />
+              </button>
+            ))}
           </nav>
 
-          {/* Desktop Search & Icons */}
-          <div className="hidden md:flex items-center gap-4 ml-4">
-<input
-  type="text"
-  placeholder="Search..."
-  value={searchTerm}
-  onChange={(e) => setSearchTerm(e.target.value)}
-  onKeyDown={handleSearch}
-  className="w-[200px] hover:w-[300px] transition-all duration-300 rounded-full border border-gray-300 px-2 py-1 focus:outline-none focus:border-green-500"
-/>
-            <Link to="/payment" className="relative group">
+          {/* Desktop Search & Actions */}
+          <div className="hidden md:flex items-center gap-6">
+            {/* Search Input */}
+            <div className="relative search-container">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+              <input
+                type="text"
+                placeholder="Search products..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                onKeyDown={handleSearch}
+                className="w-64 pl-10 pr-4 py-2 rounded-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-300 hover:w-72 focus:w-72 bg-white/80 backdrop-blur-sm"
+                aria-label="Search products"
+              />
+            </div>
+
+            {/* Cart with Badge */}
+            <Link 
+              to="/payment" 
+              className="relative p-2 rounded-full hover:bg-green-50 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
+              aria-label="Shopping cart (2 items)"
+            >
               <ShoppingCart className="h-6 w-6 text-gray-700 hover:text-green-600 transition" />
-              <span className="absolute -top-2 -right-2 bg-green-600 text-white text-xs rounded-full px-1">
+              <span className="absolute -top-1 -right-1 bg-green-600 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center font-medium animate-pulse">
                 2
               </span>
             </Link>
-            <Link to="/profile">
+
+            {/* Profile */}
+            <Link 
+              to="/profile"
+              className="p-2 rounded-full hover:bg-green-50 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
+              aria-label="User profile"
+            >
               <User className="h-6 w-6 text-gray-700 hover:text-green-600 transition" />
             </Link>
           </div>
 
-          {/* Mobile Section */}
-          <div className="md:hidden flex flex-1 items-center justify-between relative">
-            {/* LEFT SIDE (Menu + Search) */}
-            <div className="flex items-center gap-x-2">
-              {/* Sheet Menu with Icon Trigger */}
+          {/* Mobile Navigation */}
+          <div className="md:hidden flex flex-1 items-center justify-between relative search-container">
+            
+            {/* Left: Menu & Search */}
+            <div className="flex items-center gap-3">
+              
+              {/* Mobile Menu Sheet */}
               <Sheet>
                 <SheetTrigger asChild>
-                  <button
-                    className="p-2 rounded bg-beige black hover:bg-yellow-100 focus:outline-none"
-                    aria-label="Open menu"
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-10 w-10 hover:bg-green-50 focus:ring-2 focus:ring-green-500"
+                    aria-label="Open main menu"
                   >
-                    <svg
-                      width="24"
-                      height="24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      viewBox="0 0 24 24"
-                    >
-                      <path d="M4 6h16M4 12h16M4 18h16" />
-                    </svg>
-                  </button>
+                    <Menu className="h-5 w-5" />
+                  </Button>
                 </SheetTrigger>
 
-                <SheetContent>
-                  <SheetHeader>
-                    <SheetTitle>MENU</SheetTitle>
+                <SheetContent side="left" className="w-[300px] sm:w-[400px]">
+                  <SheetHeader className="text-left">
+                    <SheetTitle className="text-2xl">Menu</SheetTitle>
                     <SheetDescription>
-                      Click on a link to page.
+                      Navigate to different sections of our website
                     </SheetDescription>
                   </SheetHeader>
 
-                  <nav className="flex flex-col gap-2 px-4 py-2">
-                    <SheetClose asChild>
-                      <button
-                        onClick={() => handleScroll("home")}
-                        className="text-left px-4 py-2 hover:bg-green-50 rounded"
-                      >
-                        Home
-                      </button>
-                    </SheetClose>
-
-                    <SheetClose asChild>
-                      <button
-                        onClick={() => handleScroll("about")}
-                        className="text-left px-4 py-2 hover:bg-green-50 rounded"
-                      >
-                        About
-                      </button>
-                    </SheetClose>
-
-                    <SheetClose asChild>
-                      <button
-                        onClick={() => handleScroll("products")}
-                        className="text-left px-4 py-2 hover:bg-green-50 rounded"
-                      >
-                        Products
-                      </button>
-                    </SheetClose>
-
-                    <SheetClose asChild>
-                      <button
-                        onClick={() => handleScroll("reviews")}
-                        className="text-left px-4 py-2 hover:bg-green-50 rounded"
-                      >
-                        Reviews
-                      </button>
-                    </SheetClose>
-
-                    <SheetClose asChild>
-                      <button
-                        onClick={() => handleScroll("contact")}
-                        className="text-left px-4 py-2 hover:bg-green-50 rounded"
-                      >
-                        Contact
-                      </button>
-                    </SheetClose>
+                  <nav className="flex flex-col gap-1 mt-8" aria-label="Mobile navigation">
+                    {navItems.map((item) => (
+                      <SheetClose asChild key={item.id}>
+                        <Button
+                          variant="ghost"
+                          onClick={() => handleNavigation(item.id)}
+                          className="justify-start h-12 text-lg hover:bg-green-50 hover:text-green-600 transition-colors"
+                        >
+                          {item.label}
+                        </Button>
+                      </SheetClose>
+                    ))}
                   </nav>
 
-                  <SheetFooter>
+                  <SheetFooter className="mt-8">
                     <SheetClose asChild>
                       <Button variant="outline" className="w-full">
-                        Close
+                        Close Menu
                       </Button>
                     </SheetClose>
                   </SheetFooter>
@@ -201,55 +197,65 @@ const handleSearch = (e) => {
               </Sheet>
 
               {/* Mobile Search Toggle */}
-              <button
-                className="p-2 rounded hover:bg-green-100 focus:outline-none"
-                onClick={() => setShowSearch((prev) => !prev)}
-                aria-label="Toggle search"
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => setShowSearch(prev => !prev)}
+                className="h-10 w-10 hover:bg-green-50 focus:ring-2 focus:ring-green-500"
+                aria-label={showSearch ? "Close search" : "Open search"}
               >
-                <svg
-                  width="24"
-                  height="24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  viewBox="0 0 24 24"
-                >
-                  <circle cx="11" cy="11" r="8" />
-                  <line x1="21" y1="21" x2="16.65" y2="16.65" />
-                </svg>
-              </button>
+                {showSearch ? <X className="h-5 w-5" /> : <Search className="h-5 w-5" />}
+              </Button>
             </div>
 
-            {/* RIGHT SIDE (Cart + Profile) */}
-            <div className="flex items-center justify-end gap-x-2">
-              <Link to="/payment">
+            {/* Right: Cart & Profile */}
+            <div className="flex items-center gap-3">
+              <Link 
+                to="/cart"
+                className="relative p-2 rounded-full hover:bg-green-50 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
+                aria-label="Shopping cart (2 items)"
+              >
                 <ShoppingCart className="h-6 w-6 text-gray-700 hover:text-green-600 transition" />
+                <span className="absolute -top-1 -right-1 bg-green-600 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center font-medium">
+                  2
+                </span>
               </Link>
-              <Link to="/profile">
+              
+              <Link 
+                to="/profile"
+                className="p-2 rounded-full hover:bg-green-50 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
+                aria-label="User profile"
+              >
                 <User className="h-6 w-6 text-gray-700 hover:text-green-600 transition" />
               </Link>
             </div>
 
-            {/* Mobile Search Input (dropdown) */}
+            {/* Mobile Search Dropdown */}
             <div
-              className={`absolute left-0 top-12 min-w-72 px-4 z-50 transition-all duration-300 ${
+              className={`absolute left-0 top-14 w-full px-4 z-50 transition-all duration-300 ${
                 showSearch
-                  ? "opacity-100 scale-100"
-                  : "opacity-0 scale-95 pointer-events-none"
+                  ? "opacity-100 translate-y-0"
+                  : "opacity-0 -translate-y-2 pointer-events-none"
               }`}
-              style={{ transformOrigin: "top" }}
             >
-              <input
-                type="text"
-                placeholder="Search..."
-                className="w-full rounded-full border border-gray-300 px-2 py-1 focus:outline-none focus:border-green-500 bg-white shadow"
-                autoFocus={showSearch}
-              />
+              <div className="relative bg-white rounded-xl shadow-lg border border-gray-200 p-2">
+                <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+                <input
+                  type="text"
+                  placeholder="Search products..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  onKeyDown={handleSearch}
+                  className="w-full pl-10 pr-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent bg-white"
+                  autoFocus={showSearch}
+                  aria-label="Search products"
+                />
+              </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
+    </header>
   );
 };
 

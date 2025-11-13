@@ -24,9 +24,11 @@ export const login = (data) =>
 // ✅ Refresh Token
 export const refresh = () => api.post("/refresh");
 
-// ✅ Forgot Password (expects { email })
-export const forgotPassword = (email) =>
-  api.post("/forgot-password", { email });
+// ✅ Forgot Password (expects { email }) - FIXED: accepts object
+export const forgotPassword = (data) =>
+  api.post("/forgot-password", {
+    email: data.email,
+  });
 
 // ✅ Reset Password (expects { token, newPassword, confirmPassword })
 export const resetPassword = (data) =>
@@ -48,5 +50,14 @@ export const changePassword = (data) =>
     oldPassword: data.oldPassword,
     newPassword: data.newPassword,
   });
+
+// Add error interceptor for better error handling
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    console.error("API Error:", error.response?.data);
+    return Promise.reject(error);
+  }
+);
 
 export default api;
